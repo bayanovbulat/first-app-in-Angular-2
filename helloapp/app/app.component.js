@@ -16,30 +16,40 @@ var HelloAngularComponent = (function () {
         this.resetPomodoro();
     }
     HelloAngularComponent.prototype.resetPomodoro = function () {
+        var _this = this;
         this.minutes = 24;
         this.seconds = 59;
         this.buttonLabel = 'Start';
         this.isPaused = false;
+        this.firstStep = false;
+        this.tickStep = false;
         this.togglePause();
-        this.tick();
+        setInterval(function () { return _this.tick(); }, 1000);
     };
     HelloAngularComponent.prototype.tick = function () {
-        if (this.isPaused) {
-            this.seconds = this.seconds - 1;
-            if (this.seconds < 0) {
-                this.minutes = this.minutes - 1;
-                this.seconds = 59;
-                if (this.minutes < 0) {
-                    this.resetPomodoro();
+        if (this.tickStep) {
+            if (this.isPaused) {
+                if (--this.seconds < 0) {
+                    this.seconds = 59;
+                    if (--this.minutes < 0) {
+                        this.seconds = 59;
+                        this.minutes = 24;
+                    }
                 }
             }
         }
     };
     HelloAngularComponent.prototype.togglePause = function () {
+        if (this.buttonLabel == 'Start' && this.isPaused == true) {
+            this.firstStep = true;
+            this.isPaused = !this.isPaused;
+        }
         this.isPaused = !this.isPaused;
-        if (this.minutes <= 24 || this.seconds <= 59) {
+        if (this.minutes < 24 || this.seconds < 59 || this.firstStep == true) {
+            this.firstStep = false;
             this.buttonLabel = this.isPaused ? 'Pause' : 'Resume';
             if (this.isPaused == true) {
+                this.tickStep = true;
                 this.tick();
             }
         }
@@ -49,7 +59,7 @@ var HelloAngularComponent = (function () {
 HelloAngularComponent = __decorate([
     core_1.Component({
         selector: 'my-app',
-        template: "<label>{{ greeting }} \u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0438\u043C\u044F:</label>\n                 <input [(ngModel)]=\"name\" placeholder=\"name\">\n                 <h1>\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C {{name}}!</h1>\n\t\t\t\t <h1> {{ minutes }}:{{ seconds }} </h1>\n\t\t\t\t <p><button (click)=\"togglePause()\">{{ buttonLabel }}</button></p>"
+        template: "<div align=\"center\"><label>{{ greeting }} \u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0438\u043C\u044F:</label>\n                 <input [(ngModel)]=\"name\" placeholder=\"name\">\n                 <h1>\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C {{name}}!</h1>\n\t\t\t\t <h1> {{ minutes }}:{{ seconds }} </h1>\n\t\t\t\t <p><button (click)=\"togglePause()\">{{ buttonLabel }}</button></p></div>"
     }),
     __metadata("design:paramtypes", [])
 ], HelloAngularComponent);
